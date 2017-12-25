@@ -34,9 +34,16 @@ namespace ApiTarea.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            IndexUrl n = new IndexUrl();
-            n.Url = "http://192.168.56.101:83/login";
-            return Json(_Service.Scrap(new List<string>() { n.Url }));
+
+            if (!UrlParser.checkURLFormat(Site.Url))
+                return BadRequest(ModelState);
+
+            if (!UrlParser.checkURLStatus(Site.Url))
+                return BadRequest(ModelState);
+
+            _Service.Scrap(new List<string>() { Site.Url });
+
+            return Json(_Service.Indexs);
         }
 
         [HttpGet]
