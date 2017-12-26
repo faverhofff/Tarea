@@ -10,16 +10,16 @@ namespace ApiTarea.Models
     {
         public Guid Id { get; set; }
 
-        [Required]
         public string Title { get; set; }
 
-        [Required]
         public string Content { get; set; }
 
-        [Required]
         public string Url { get; set; }
 
-        [Required]
-        public string UrlSource { get; set; }
+        private int Matchs { get; set; }
+
+        public void seWordMatchs(int value) { this.Matchs = value; }
+
+        public int getWordMatchs() { return this.Matchs; }
     }
 }
