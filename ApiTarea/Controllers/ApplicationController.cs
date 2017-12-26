@@ -3,9 +3,12 @@ using ApiTarea.Services;
 using ApiTarea.Models;
 using System.Collections.Generic;
 using System.Web.Http.Results;
+using System.Web.Http.Cors;
 
 namespace ApiTarea.Controllers
 {
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
+
     [RoutePrefix("api")]
     public class ApplicationController : ApiController
     {
@@ -13,25 +16,39 @@ namespace ApiTarea.Controllers
 
         public ApplicationController()
         {
-            _Service = new Aplication();                
+            _Service = new Aplication();
         }
 
+        public static void Register(HttpConfiguration config)
+        {
+            config.EnableCors();
+        }
+
+        /// <summary>
+        /// Search match of a word
+        /// </summary>
+        /// <param name="Form"></param>
+        /// <returns></returns>
         [HttpGet]
-        // [HttpOptions]
         [Route("search")]
-        public IHttpActionResult Search(Search Form)
+        public IHttpActionResult Search([FromUri] Search Form)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
+            
             return Json(_Service.Search(Form.Word));
         }
 
-        [HttpPost]
+        /// <summary>
+        /// Indexing a page and his link results into the system
+        /// </summary>
+        /// <param name="Site"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("index")]
-        public IHttpActionResult IndexPage([FromBody] IndexUrl Site)
+        public IHttpActionResult IndexPage([FromUri] IndexUrl Site)
         {
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -43,9 +60,14 @@ namespace ApiTarea.Controllers
 
             _Service.Scrap(new List<string>() { Site.Url });
 
-            return Json(_Service.Indexs);
+            return Json(_Service.getIndexResult());
         }
 
+        /// <summary>
+        /// Database from cero
+        /// </summary>
+        /// <param name="Site"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("clear")]
         public IHttpActionResult ClearPage([FromBody] IndexUrl Site)
