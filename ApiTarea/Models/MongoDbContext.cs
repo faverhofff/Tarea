@@ -3,6 +3,7 @@ using MongoDB.Driver;
 using ApiTarea.Models;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using ApiTarea.Services;
 
 namespace ApiTarea.Models
 {
@@ -32,14 +33,23 @@ namespace ApiTarea.Models
 
         public void Insert(List<Page> data)
         {
+            if (data.Count == 0)
+                return;
+
             var collection = _Database.GetCollection<Page>("Pages");
+
             collection.InsertMany(data);
         }
 
-        public List<Page> SelectByWord(string Word)
+        public List<Page> SelectByMatchWord(string Word)
         {
+            List<Page> output = new List<Page>();
+
             var filter = Builders<Page>.Filter.Regex("Content", new BsonRegularExpression(Word));
-            return _Database.GetCollection<Page>("Pages").Find(filter).ToList<Page>();
+
+            _Database.GetCollection<Page>("Pages").Find(filter).ToList<Page>();
+
+            return Aplication.removeContent(_Database.GetCollection<Page>("Pages").Find(filter).ToList<Page>());
         }
 
         public void Remove()
