@@ -1,0 +1,43 @@
+﻿<form accept-charset="UTF-8" id="frontend_search_form" name="frontend_search_form">
+<div id="search-form-frontend">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="input-group">
+        <input class="form-control input-lg" name="search" type="text" [(ngModel)]="search_word">
+      </div>
+      <input type="button" value="Search" name="submit" class="btn btn-primary" (click)="search()" />
+    </div>
+  </div>
+</div>
+</form>
+
+
+<div class="content">
+  
+  <div *ngIf="isQuery == true">
+    Found {{ data.length }} results
+  </div>
+
+  <div>
+
+    <ul class="search-results">
+      <li *ngFor="let row of data">
+
+        <h3 class="title">
+          <a href="{{ row.Url }}" class="link">{{ row.Title.length > 110 ? row.Title.substring(1,110)+" ..." : row.Title }}</a>
+        </h3>
+
+        <div>
+          
+        </div>
+        <div>
+          Occurrences: {{ row.Matchs }}
+        </div>
+      </li>
+    </ul>
+
+  </div>
+
+</div>
+
+

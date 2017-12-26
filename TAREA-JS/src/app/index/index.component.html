@@ -1,0 +1,18 @@
+﻿<form accept-charset="UTF-8" id="frontend_search_form" name="frontend_search_form">
+  <div id="search-form-frontend">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="input-group">
+          <input class="form-control input-lg" name="search" type="text" [(ngModel)]="url_index">
+        </div>
+        <input type="button" value="Index" name="index" class="btn btn-primary" (click)="indexer()" />
+        <input type="button" value="Clear" name="clear" class="btn btn-danger" (click)="clearDB()" />
+      </div>
+    </div>
+  </div>
+</form>
+
+
+<div *ngIf="result">
+  Indexed {{ result.pageIndexTotal }} new pages and {{ result.pageWordsCount }} words
+</div>
