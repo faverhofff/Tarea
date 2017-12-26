@@ -8,6 +8,7 @@ import { TopMenuComponent } from './topmenu/top.menu.component';
 import { SearchComponent } from './search/search.component';
 
 import { AppRoutingModule } from './routing.module';
+import { GlobalVars } from './app.global';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,10 @@ import { AppRoutingModule } from './routing.module';
       HttpModule,
       FormsModule
   ],
-  providers: [],
+  providers: [
+    GlobalVars
+  ],
   bootstrap: [TopMenuComponent]
 })
+
 export class AppModule { }
