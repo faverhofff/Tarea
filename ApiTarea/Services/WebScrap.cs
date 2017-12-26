@@ -5,6 +5,7 @@ using System.Web;
 using System.Net;
 using ApiTarea.Models;
 using static ApiTarea.Services.LinkFinder;
+using System.Text.RegularExpressions;
 
 namespace ApiTarea.Services
 {
@@ -21,6 +22,8 @@ namespace ApiTarea.Services
         private WebClient _Client { get; set; } = new WebClient();
 
         private string _Buffer = "";
+
+        public int WordCount { get; private set; }
 
         protected WebScrap() { }
 
@@ -39,18 +42,29 @@ namespace ApiTarea.Services
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        protected Page scrapPage( string url )
+        protected Page scrapPage(string url)
         {
-            _Buffer = _Client.DownloadString(url);
+            try
+            {
+                _Buffer = _Client.DownloadString(url);
+            }
+            catch
+            {
+                _Buffer = "";
+            }
 
-            foreach (LinkItem link in LinkFinder.Find(_Buffer)) 
+            foreach (LinkItem link in LinkFinder.Find(_Buffer))
                 nextUrls.Add(link.Href);
 
-            Page row = new Page();
-            row.Id = Guid.NewGuid();
-            row.Title = ""; //buscar expresion regular de TITLE
-            row.Content = _Buffer; // convertir html to text
-            row.Url = url;
+            Page row = new Page()
+            {
+                Id = Guid.NewGuid(),
+                Title = GetTitle(_Buffer),
+                Content = HtmlToPlainText(_Buffer),
+                Url = url
+            };
+
+            WordCount += WordCounter(_Buffer);
 
             return row;
         }
@@ -69,6 +83,52 @@ namespace ApiTarea.Services
             return _result;
         }
 
- 
+        private string GetTitle(string html)
+        {
+            string regex = @"(?<=<title.*>)([\s\S]*)(?=</title>)";
+            System.Text.RegularExpressions.Regex ex = new System.Text.RegularExpressions.Regex(regex, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            return ex.Match(html).Value.Trim();
+        }
+
+        private string HtmlToPlainText(string html)
+        {
+            const string tagWhiteSpace = @"(>|$)(\W|\n|\r)+<";
+            const string stripFormatting = @"<[^>]*(>|$)";
+            const string lineBreak = @"<(br|BR)\s{0,1}\/{0,1}>";
+            var lineBreakRegex = new Regex(lineBreak, RegexOptions.Multiline);
+            var stripFormattingRegex = new Regex(stripFormatting, RegexOptions.Multiline);
+            var tagWhiteSpaceRegex = new Regex(tagWhiteSpace, RegexOptions.Multiline);
+
+            var text = html;
+            
+            text = System.Net.WebUtility.HtmlDecode(text);
+            
+            text = tagWhiteSpaceRegex.Replace(text, "><");
+            
+            text = lineBreakRegex.Replace(text, Environment.NewLine);
+            
+            text = stripFormattingRegex.Replace(text, string.Empty);
+
+            return text;
+        }
+
+        private int WordCounter(string Text)
+        {
+            var text = Text.Trim();
+            int wordCount = 0, index = 0;
+
+            while (index < text.Length)
+            {
+                while (index < text.Length && !char.IsWhiteSpace(text[index]))
+                    index++;
+
+                wordCount++;
+
+                while (index < text.Length && char.IsWhiteSpace(text[index]))
+                    index++;
+            }
+
+            return index;
+        }
     }
 }
