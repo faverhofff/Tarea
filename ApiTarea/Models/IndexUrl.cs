@@ -6,10 +6,11 @@ using System.Web;
 
 namespace ApiTarea.Models
 {
-    public class IndexUrl
-    {
+    public class IndexUrl { 
+
         [Required]
         public string Url { get; set; }
     }
+
 }
 

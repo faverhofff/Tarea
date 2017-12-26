@@ -37,9 +37,9 @@ namespace ApiTarea.Services
         {
             try
             {
-                using (var client = new WebClient())
-                    using (client.OpenRead(url))
-                        return true;
+                var client = new WebClient();
+                client.OpenRead(url);
+                return true;
             } 
             catch
             {
