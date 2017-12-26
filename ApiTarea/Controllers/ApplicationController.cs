@@ -35,7 +35,7 @@ namespace ApiTarea.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            
+
             return Json(_Service.Search(Form.Word));
         }
 

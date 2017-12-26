@@ -47,9 +47,7 @@ namespace ApiTarea.Models
 
             var filter = Builders<Page>.Filter.Regex("Content", new BsonRegularExpression(Word));
 
-            _Database.GetCollection<Page>("Pages").Find(filter).ToList<Page>();
-
-            return Aplication.removeContent(_Database.GetCollection<Page>("Pages").Find(filter).ToList<Page>());
+            return _Database.GetCollection<Page>("Pages").Find(filter).ToList<Page>();
         }
 
         public void Remove()

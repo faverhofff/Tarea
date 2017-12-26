@@ -8,7 +8,7 @@ namespace ApiTarea.Services
 {
     static class MongoDBInstance
     {
-        private readonly static MongoDbContext _instance = new MongoDbContext("192.168.56.102");
+        private readonly static MongoDbContext _instance = new MongoDbContext("192.168.0.220");
 
         public static MongoDbContext getInstance
         {

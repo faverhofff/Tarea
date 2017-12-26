@@ -16,10 +16,7 @@ namespace ApiTarea.Models
 
         public string Url { get; set; }
 
-        private int Matchs { get; set; }
+        public int Matchs { get; set; }
 
-        public void seWordMatchs(int value) { this.Matchs = value; }
-
-        public int getWordMatchs() { return this.Matchs; }
     }
 }

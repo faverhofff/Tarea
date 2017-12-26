@@ -1,6 +1,7 @@
 ﻿using ApiTarea.Models;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ApiTarea.Services
@@ -33,13 +34,14 @@ namespace ApiTarea.Services
                 Indexs = 0;
                 Words = 0;
             }
-            else if (depth <= 3)
+
+            if (depth <= 3)
             {
                 var pages = engine.scrapPages();
 
                 MongoDBInstance.getInstance.Insert(pages);
-                    
-                Indexs += engine.nextUrls.Count;
+
+                Indexs += url.Count; 
 
                 Words += engine.WordCount;
 
@@ -56,7 +58,14 @@ namespace ApiTarea.Services
         {
             try
             {
-                return MongoDBInstance.getInstance.SelectByMatchWord(word);
+                List<Page> output = MongoDBInstance.getInstance.SelectByMatchWord(word);
+                foreach (Page p in output)
+                {
+                    p.Matchs = CountMatchWordIntoResult(word, p.Content);
+                    p.Content = "";
+                }
+                
+                return output;
             }
             catch
             {
@@ -116,38 +125,9 @@ namespace ApiTarea.Services
             return indexR;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="list"></param>
-        /// <returns></returns>
-        public static List<Page> removeContent(List<Page> list)
+        public static int CountMatchWordIntoResult(string word, string main_content)
         {
-            List<Page> output = new List<Page>();
-            foreach (Page p in list)
-            {
-                p.Content = "";
-                output.Add(p);
-            }
-
-            return output;
-        }
-
-        public static int CountMatchWordIntoResult(string word, List<Page> searchResult)
-        {
-            foreach(Page site in searchResult)
-                foreach(string sentence in site.Content.Split(' '))
-                {
-                   // site.seWordMatchs(  )
-                }
-
-            /*
-            content.split(" ").forEach((word) => {
-                this.numberOfOccurrences = content.match(new RegExp(word, "g")).length
-            });
-            */
-
-            return 1;
+            return Regex.Matches(main_content, word).Count;
         }
     }
 }
